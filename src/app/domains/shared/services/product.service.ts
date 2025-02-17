@@ -24,4 +24,9 @@ export class ProductService {
     const url = `${environment.apiUrl}/api/v1/products/${id}`;
     return this.http.get<Product>(url);
   }
+
+  getOneBySlug(slug: string) {
+    const url = `${environment.apiUrl}/api/v1/products/slug/${slug}`;
+    return this.http.get<Product>(url);
+  }
 }
