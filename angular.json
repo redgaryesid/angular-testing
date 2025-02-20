@@ -11,8 +11,7 @@
         },
         "@schematics/angular:component": {
           "skipTests": true,
-          "standalone": true,
-          "changeDetection": "OnPush"
+          "standalone": true
         },
         "@schematics/angular:directive": {
           "skipTests": true,
@@ -46,7 +45,9 @@
               "base": "dist/store"
             },
             "index": "src/index.html",
-            "polyfills": [],
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
@@ -126,7 +127,7 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": [],
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["src/styles.css"],
