@@ -7,7 +7,7 @@ import { environment } from '@env/environment';
   providedIn: 'root',
 })
 export class CategoryService {
-  private http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
 
   getAll() {
     return this.http.get<Category[]>(`${environment.apiUrl}/api/v1/categories`);
