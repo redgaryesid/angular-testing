@@ -8,7 +8,8 @@ import { environment } from '@env/environment';
 import { generateFakeCategory } from '../models/category.mock';
 import { Category } from '../models/category.model';
 
-import { enableFetchMocks } from 'jest-fetch-mock';
+import fetchMock ,{ enableFetchMocks } from 'jest-fetch-mock';
+import { error } from 'node:console';
 enableFetchMocks();
 
 describe('CategoryService', () => {
@@ -17,7 +18,7 @@ describe('CategoryService', () => {
 
   beforeEach(() => {
     spectator = createHttp();
-    global.fetch = jest.fn(); // Reset fetch mock
+    fetchMock.resetMocks(); // Reset fetch mock
   });
 
   describe('getAll', () => {
@@ -72,56 +73,42 @@ describe('CategoryService', () => {
       ];
 
       // Mock global fetch
-      global.fetch = jest.fn().mockResolvedValueOnce({
-        json: async () => mockCategories,
-      } as Response);
+      fetchMock.mockResponseOnce(JSON.stringify(mockCategories));
 
       const result = await spectator.service.getAllPromise();
       expect(result).toEqual(mockCategories);
-      expect(global.fetch).toHaveBeenCalledWith(url);
+      expect(fetch).toHaveBeenCalledWith(url);
     });
 
     it('should handle empty categories list with Promise', async () => {
       const mockCategories: Category[] = [];
 
       // Mock global fetch
-      global.fetch = jest.fn().mockResolvedValueOnce({
-        json: async () => mockCategories,
-      } as Response);
+      fetchMock.mockResponseOnce(JSON.stringify(mockCategories));
 
       const result = await spectator.service.getAllPromise();
       expect(result).toEqual([]);
-      expect(global.fetch).toHaveBeenCalledWith(url);
+      expect(fetch).toHaveBeenCalledWith(url);
     });
 
     it('should handle network error in Promise', async () => {
       const errorMessage = 'Network Error';
 
       // Mock global fetch to throw error
-      global.fetch = jest.fn().mockRejectedValueOnce(new Error(errorMessage));
+      fetchMock.mockRejectOnce(new Error(errorMessage));
 
-      try {
-        await spectator.service.getAllPromise();
-      } catch (error) {
-        expect(error).toEqual(new Error(errorMessage));
-      }
-      expect(global.fetch).toHaveBeenCalledWith(url);
+      await expect(spectator.service.getAllPromise()).rejects.toThrow(errorMessage);
+      expect(fetch).toHaveBeenCalledWith(url);
     });
 
     it('should handle JSON parsing error in Promise', async () => {
       // Mock global fetch with invalid JSON
-      global.fetch = jest.fn().mockResolvedValueOnce({
-        json: async () => {
-          throw new Error('Invalid JSON');
-        },
-      } as unknown as Response);
+      fetchMock.mockRejectOnce(new Error("Invalid JSON"));
 
-      try {
-        await spectator.service.getAllPromise();
-      } catch (error) {
-        expect(error).toEqual(new Error('Invalid JSON'));
-      }
-      expect(global.fetch).toHaveBeenCalledWith(url);
+      await expect(async () => {
+      await spectator.service.getAllPromise();
+      }).rejects.toThrow("Invalid JSON");
+      expect(fetch).toHaveBeenCalledWith(url);
     });
   });
 });
