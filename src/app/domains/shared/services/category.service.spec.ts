@@ -9,7 +9,6 @@ import { generateFakeCategory } from '../models/category.mock';
 import { Category } from '../models/category.model';
 
 import fetchMock ,{ enableFetchMocks } from 'jest-fetch-mock';
-import { error } from 'node:console';
 enableFetchMocks();
 
 describe('CategoryService', () => {
