@@ -29,6 +29,25 @@ describe("ProductComponent", () => {
         expect(element).toHaveText(
             mockProduct.title
         );
-    }
-    );
+    });
+
+    it("should display product price", () => {
+        spectator.detectChanges();   
+        const element = spectator.query(byTestId('product-price'));
+        expect(element).toHaveText(
+            mockProduct.price.toString()
+        );
+    });
+
+    it("Should emit a product when the button is clicked", () => {
+        //Arrange
+        const emitSpy = jest.spyOn(spectator.component.addToCart, "emit");
+
+        //Act
+        spectator.detectChanges();
+        spectator.click(byTestId("add-to-cart-button"));
+
+        //Assert
+        expect(emitSpy).toHaveBeenCalledWith(mockProduct);
+    });
 });
