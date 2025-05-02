@@ -40,9 +40,9 @@ export default class ProductDetailComponent {
       return previousValue?.value;
     },
   });
-  private productService = inject(ProductService);
-  private cartService = inject(CartService);
-  private metaTagsService = inject(MetaTagsService);
+  private readonly productService = inject(ProductService);
+  private readonly cartService = inject(CartService);
+  private readonly metaTagsService = inject(MetaTagsService);
 
   constructor() {
     effect(() => {
