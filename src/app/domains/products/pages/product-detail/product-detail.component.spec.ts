@@ -9,6 +9,7 @@ import { DeferBlockBehavior } from "@angular/core/testing";
 import { RelatedComponent } from "@products/components/related/related.component";
 import { faker } from "@faker-js/faker";
 import exp from "constants";
+import { CartService } from "@shared/services/cart.service";
 
 window.IntersectionObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
@@ -39,7 +40,8 @@ describe("ProductDetailComponent", () => {
     providers: [
         mockProvider( ProductService,{
           getOneBySlug: jest.fn().mockReturnValue(of(mockProduct)),
-        })
+        }),
+        mockProvider(CartService),
     ],
    });
    beforeEach(() => {
@@ -93,5 +95,12 @@ describe("ProductDetailComponent", () => {
       const cover = spectator.query<HTMLImageElement>(byTestId("cover"));
       expect(cover?.src).toBe(mockProduct.images[1]);
     }
+  });
+
+  it("should add the product to the cart when the button is clicked", () => {
+    //Arrange
+    spectator.detectChanges();
+    spectator.click(byTestId("add-to-cart"));
+    expect(spectator.inject(CartService).addToCart).toHaveBeenCalledWith(mockProduct);
   });
 });
