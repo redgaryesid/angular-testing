@@ -7,6 +7,8 @@ import { generateFakeProduct } from "@shared/models/product.mock";
 import { of } from "rxjs";
 import { DeferBlockBehavior } from "@angular/core/testing";
 import { RelatedComponent } from "@products/components/related/related.component";
+import { faker } from "@faker-js/faker";
+import exp from "constants";
 
 window.IntersectionObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
@@ -22,7 +24,14 @@ describe("ProductDetailComponent", () => {
   let spectator: Spectator<ProductDetailComponent>;
   let productService: SpyObject<ProductService>;
 
-  const mockProduct = generateFakeProduct();
+  const mockProduct = generateFakeProduct({
+    images:[
+     faker.image.url(),
+     faker.image.url(),
+     faker.image.url(),
+     faker.image.url(),
+    ]
+  });
 
   const createComponent = createRoutingFactory({
     component:ProductDetailComponent, 
@@ -68,5 +77,21 @@ describe("ProductDetailComponent", () => {
     const related = spectator.queryAll(RelatedComponent);
     expect(related).toBeTruthy();
   });
-  
+
+  it("should change the cover when the  image is clicked", () => {
+    //Act
+    spectator.detectChanges();
+
+    //Assert
+    const gallery = spectator.query(byTestId("gallery"));
+    const images = gallery?.querySelectorAll("img");
+
+    expect(images).toHaveLength(mockProduct.images.length);
+
+    if(images &&images.length > 0){
+      spectator.click(images[1]);
+      const cover = spectator.query<HTMLImageElement>(byTestId("cover"));
+      expect(cover?.src).toBe(mockProduct.images[1]);
+    }
+  });
 });
